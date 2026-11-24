@@ -63,14 +63,15 @@ npm run lint
 
 ## Producción con Docker / Dokploy
 
-El `Dockerfile` compila la app (multi-stage) y sirve el `dist` con nginx en el **puerto 80** del contenedor. El `docker-compose.prod.yml` lo publica en el **puerto 3000** del host por defecto; se puede cambiar con la variable `PORT`.
+El `Dockerfile` compila la app (multi-stage) y sirve el `dist` con nginx en el **puerto 80** del contenedor. El `docker-compose.prod.yml` **no publica puertos en el host**: el 80 queda solo en la red interna de Docker.
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
-# http://localhost:3000
 ```
 
-En Dokploy: crear una aplicación de tipo **Docker Compose**, apuntar al repositorio y al archivo `docker-compose.prod.yml`. No requiere variables de entorno obligatorias. Si se usa el reverse proxy de Dokploy con dominio propio, conviene quitar la sección `ports:` y configurar el **puerto interno 80**. El contenedor expone `/health` para el healthcheck.
+En Dokploy: crear una aplicación de tipo **Docker Compose**, apuntar al repositorio y al archivo `docker-compose.prod.yml`. Configurar el **puerto interno 80** y asignar un dominio; el reverse proxy (Traefik) enruta por dominio hacia el contenedor, por lo que varios apps pueden usar el mismo 80 sin chocar con el puerto 3000 del host. No requiere variables de entorno obligatorias. El contenedor expone `/health` para el healthcheck.
+
+Si querés probarlo sin dominio ni proxy, podés agregar temporalmente `- "3000:80"` bajo `ports:` (o `${PORT:-3000}:80`) y entrar por `http://localhost:3000`.
 
 ## Estructura
 
