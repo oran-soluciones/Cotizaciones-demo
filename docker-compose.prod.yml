@@ -6,8 +6,8 @@ services:
     image: cotizaciones-demo:latest
     container_name: cotizaciones-demo
     restart: unless-stopped
-    ports:
-      - "${PORT:-3000}:80"
+    # Sin `ports:`: el puerto 80 queda solo en la red interna.
+    # Dokploy/Traefik enruta por dominio hacia este contenedor.
     environment:
       TZ: America/Argentina/Buenos_Aires
     healthcheck:
