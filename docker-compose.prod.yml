@@ -1,0 +1,18 @@
+services:
+  cotizaciones-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cotizaciones-demo:latest
+    container_name: cotizaciones-demo
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:80"
+    environment:
+      TZ: America/Argentina/Buenos_Aires
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
